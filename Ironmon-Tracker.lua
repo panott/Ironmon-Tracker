@@ -46,6 +46,8 @@ function Main.Run()
 	GameSettings.initialize()
 
 	if GameSettings.game == 0 then
+		-- Show error in the console as well, since some people have the Display Messages setting off in BizHawk
+		print("Error: " .. GameSettings.gamename)
 		client.SetGameExtraPadding(0, 0, 0, 0)
 		while true do
 			gui.text(0, 0, "Lua error: " .. GameSettings.gamename)
