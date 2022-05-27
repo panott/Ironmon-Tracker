@@ -96,7 +96,6 @@ GameSettings.VERSIONS = {
 function GameSettings.initialize()
 	local gamecode = memory.read_u32_be(0x0000AC, "ROM")
 	local gameversion = memory.read_u32_be(0x0000BC, "ROM")
-	print("gamecode: " .. gamecode .. "; gameversion: " .. gameversion)
 	local pstats = { 0x3004360, 0x20244EC, 0x2024284, 0x3004290, 0x2024190, 0x20241E4 } -- Player stats
 	local estats = { 0x30045C0, 0x2024744, 0x202402C, 0x30044F0, 0x20243E8, 0x2023F8C } -- Enemy stats
 
@@ -369,47 +368,47 @@ function GameSettings.initialize()
 
 		-- Symbols file found at https://raw.githubusercontent.com/pret/pokeruby/symbols/pokeruby_rev1.sym
 		GameSettings.StartWildBattle = 0x08081a20
-		GameSettings.TrainerSentOutPkmn = 0x083fd1ed -- Finding some different names for symbols here... BattleText_SentOutSingle1?
-		GameSettings.BeginBattleIntro = 0x080123c0 -- StartBattleIntroAnim?
-		GameSettings.ReturnFromBattleToOverworld = 0x08015b58
-		GameSettings.sBattlerAbilities = 0x02039a30 -- ???
-		GameSettings.ChooseMoveUsedParticle = 0x080d869c
-		GameSettings.gChosenMove = 0x02023d4c
-		GameSettings.gBattlerAttacker = 0x02023d6b
-		GameSettings.gBattlerPartyIndexesSelfSlotOne = 0x02023bce
-		GameSettings.gBattlerPartyIndexesEnemySlotOne = 0x02023bd0
-		GameSettings.gBattlerPartyIndexesSelfSlotTwo = 0x02023bcd2
-		GameSettings.gBattlerPartyIndexesEnemySlotTwo = 0x02023bd4
-		GameSettings.gBattleMons = 0x02023be4
+		GameSettings.TrainerSentOutPkmn = 0x08400611 -- Finding some different names for symbols here... BattleText_SentOutSingle1?
+		GameSettings.BeginBattleIntro = 0x080e43e0 -- StartBattleIntroAnim?
+		GameSettings.ReturnFromBattleToOverworld = 0x08013eb0
+		GameSettings.sBattlerAbilities = 0x02039a30 -- ??? Must be one of the gUnknowns in EWRAM bank at a size of 4 bytes and a local type
+		GameSettings.ChooseMoveUsedParticle = 0x08121d3c
+		GameSettings.gChosenMove = 0x02024be8
+		GameSettings.gBattlerAttacker = 0x02024c07
+		GameSettings.gBattlerPartyIndexesSelfSlotOne = 0x02024a6a
+		GameSettings.gBattlerPartyIndexesEnemySlotOne = 0x02024a6c
+		GameSettings.gBattlerPartyIndexesSelfSlotTwo = 0x02024a6e
+		GameSettings.gBattlerPartyIndexesEnemySlotTwo = 0x02024a70
+		GameSettings.gBattleMons = 0x02024a80
 
-		GameSettings.ShowPokemonSummaryScreen = 0x081344d0
-		GameSettings.CalculateMonStats = 0x0803e47c
-		GameSettings.DisplayMonLearnedMove = 0x081267dc -- BattleText_LearnedMove?
-		GameSettings.SwitchSelectedMons = 0x08122e34 -- ???
-		GameSettings.UpdatePoisonStepCounter = 0x0806d79c
-		GameSettings.WeHopeToSeeYouAgain = 0x081a54ed -- gText_NurseJoy_WeHopeToSeeYouAgain
-		GameSettings.DoPokeballSendOutAnimation = 0x0804a938 -- StartSendOutMonAnimation? or maybe SendOutMonAnimation?
+		GameSettings.ShowPokemonSummaryScreen = 0x0809d8dc
+		GameSettings.CalculateMonStats = 0x0803b1b8
+		GameSettings.DisplayMonLearnedMove = 0x083fe636 -- BattleText_LearnedMove?
+		GameSettings.SwitchSelectedMons = 0x08122e34 -- ??? Will definitely need to explore to figure this one out... Lots of sub_* values
+		GameSettings.UpdatePoisonStepCounter = 0x0806897c
+		GameSettings.WeHopeToSeeYouAgain = 0x081a0b1a -- gText_NurseJoy_WeHopeToSeeYouAgain
+		GameSettings.DoPokeballSendOutAnimation = 0x08046420 -- StartSendOutMonAnimation (trying this first)? or maybe SendOutMonAnimation?
 
-		GameSettings.BattleScriptDrizzleActivates = 0x081d925b
-		GameSettings.BattleScriptSpeedBoostActivates = 0x081d926f
-		GameSettings.BattleScriptTraceActivates = 0x081d927d
-		GameSettings.BattleScriptRainDishActivates = 0x081d9287
-		GameSettings.BattleScriptSandstreamActivates = 0x081d929b
-		GameSettings.BattleScriptShedSkinActivates = 0x081d92af
-		GameSettings.BattleScriptIntimidateActivates = 0x081d92ec -- ??? Not there with other battle scripts... maybe BattleScript_AbilityNoSpecificStatLoss? That doesn't make sense to me though...
-		GameSettings.BattleScriptDroughtActivates = 0x081d9355
-		GameSettings.BattleScriptStickyHoldActivates = 0x081d946a -- BattleScript_NoItemSteal?
-		GameSettings.BattleScriptColorChangeActivates = 0x081d9478
-		GameSettings.BattleScriptRoughSkinActivates = 0x081d947f
-		GameSettings.BattleScriptCuteCharmActivates = 0x081d949a
-		GameSettings.BattleScriptSynchronizeActivates = 0x081d94aa
+		GameSettings.BattleScriptDrizzleActivates = 0x081d971c
+		GameSettings.BattleScriptSpeedBoostActivates = 0x081d9730
+		GameSettings.BattleScriptTraceActivates = 0x081d973e
+		GameSettings.BattleScriptRainDishActivates = 0x081d9748
+		GameSettings.BattleScriptSandstreamActivates = 0x081d975c
+		GameSettings.BattleScriptShedSkinActivates = 0x081d9770
+		GameSettings.BattleScriptIntimidateActivates = 0x081d97ad -- ??? Not there with other battle scripts... probably one of the gUnknowns, four slots down from CastformChange (which we are trying here)
+		GameSettings.BattleScriptDroughtActivates = 0x081d9816
+		GameSettings.BattleScriptStickyHoldActivates = 0x081d992b -- BattleScript_NoItemSteal?
+		GameSettings.BattleScriptColorChangeActivates = 0x081d9939
+		GameSettings.BattleScriptRoughSkinActivates = 0x081d9940
+		GameSettings.BattleScriptCuteCharmActivates = 0x081d995b
+		GameSettings.BattleScriptSynchronizeActivates = 0x081d996b
 
-		GameSettings.gSaveBlock1 = 0x0202552c
-		GameSettings.gSaveBlock2ptr = 0x0300500c -- Probably gUnknown_03004828 since it is 8 bytes after gFlashMemoryPresent, like in Emerald?
-		GameSettings.bagEncryptionKeyOffset = 0xF20
-		GameSettings.bagPocket_Items = GameSettings.gSaveBlock1 + 0x310
-		GameSettings.bagPocket_Berries = GameSettings.gSaveBlock1 + 0x54c
-		GameSettings.bagPocket_Items_Size = 30
+		GameSettings.gSaveBlock1 = 0x02025734
+		GameSettings.gSaveBlock2ptr = 0x03004828 -- Probably gUnknown_03004828 since it is 8 bytes after gFlashMemoryPresent, like in Emerald?
+		GameSettings.bagEncryptionKeyOffset = 0xAC -- Using Emerald's key offset first to see if that is right (not used anywhere tho...)
+		GameSettings.bagPocket_Items = GameSettings.gSaveBlock1 + 0x560 -- Using Emerald's offsets here as well
+		GameSettings.bagPocket_Berries = GameSettings.gSaveBlock1 + 0x790
+		GameSettings.bagPocket_Items_Size = 30 -- Using Emerald's bag pocket sizes also
 		GameSettings.bagPocket_Berries_Size = 46
 
 		-- elseif gamecode == 0x41585645 and gameversion == 0x00410000 then
