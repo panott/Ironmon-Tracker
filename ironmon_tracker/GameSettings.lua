@@ -8,11 +8,11 @@ GameSettings = {
 	-- Used in identifying the move levels for the Pokémon in the game
 	versiongroup = 0,
 
-	-- BattleSetup_StartWildBattle
+	-- BattleSetup_StartWildBattle (currently unused)
 	StartWildBattle = 0,
-	-- sText_Trainer1SentOutPkmn
+	-- sText_Trainer1SentOutPkmn (currently unused)
 	TrainerSentOutPkmn = 0,
-	-- BeginBattleIntro
+	-- BeginBattleIntro (currently unused)
 	BeginBattleIntro = 0,
 	-- ReturnFromBattleToOverworld
 	ReturnFromBattleToOverworld = 0,
