@@ -14,43 +14,40 @@ GameSettings = {
 	TrainerSentOutPkmn = 0,
 	-- BeginBattleIntro (currently unused)
 	BeginBattleIntro = 0,
-	-- ReturnFromBattleToOverworld
+	-- ReturnFromBattleToOverworld (handles end of battles)
 	ReturnFromBattleToOverworld = 0,
-	-- sBattlerAbilities
+	-- sBattlerAbilities (for retreiving ability info)
 	sBattlerAbilities = 0,
-	-- ChooseMoveUsedParticle
+	-- ChooseMoveUsedParticle (for updating moves)
 	ChooseMoveUsedParticle = 0,
-	-- gChosenMove
+	-- gChosenMove (for updating moves)
 	gChosenMove = 0,
-	-- gBattlerAttacker
+	-- gBattlerAttacker (for updating moves and which Pokémon is active)
 	gBattlerAttacker = 0,
-	-- TODO: These two items appear to be unused. If true, let's remove them.
-	--lastusedabilityaddress = 0,
-	--attackeraddress = 0,
-	-- gBattlerPartyIndexes: each slot below is 2 bytes of the 8 byte total
+	-- gBattlerPartyIndexes: each slot below is 2 bytes of the 8 byte total (for updating moves, which Pokémon is active, and during input handling)
 	gBattlerPartyIndexesSelfSlotOne = 0,
 	gBattlerPartyIndexesEnemySlotOne = 0,
 	gBattlerPartyIndexesSelfSlotTwo = 0,
 	gBattlerPartyIndexesEnemySlotTwo = 0,
-	-- gBattleMons
+	-- gBattleMons (for retrieving stat, ability, and friendship data of the active Pokémon)
 	gBattleMons = 0,
 
-	-- ShowPokemonSummaryScreen
+	-- ShowPokemonSummaryScreen (for forcing tracker update)
 	ShowPokemonSummaryScreen = 0,
-	-- CalculateMonStats
+	-- CalculateMonStats (for forcing tracker update)
 	CalculateMonStats = 0,
-	-- DisplayMonLearnedMove
+	-- DisplayMonLearnedMove (for forcing tracker update)
 	DisplayMonLearnedMove = 0,
-	-- SwitchSelectedMons
+	-- SwitchSelectedMons (for forcing tracker update)
 	SwitchSelectedMons = 0,
-	-- UpdatePoisonStepCounter
+	-- UpdatePoisonStepCounter (for forcing tracker update)
 	UpdatePoisonStepCounter = 0,
-	-- gText_WeHopeToSeeYouAgain
+	-- gText_WeHopeToSeeYouAgain (for forcing tracker update, but currently unused)
 	WeHopeToSeeYouAgain = 0,
-	-- DoPokeballSendOutAnimation
+	-- DoPokeballSendOutAnimation (for setting up to enter battle and forcing tracker update)
 	DoPokeballSendOutAnimation = 0,
 
-	-- BattleScript_DrizzleActivates
+	-- BattleScript_DrizzleActivates (this and below ability events will be used later, with BizHawk 2.9)
 	BattleScriptDrizzleActivates = 0,
 	-- BattleScript_SpeedBoostActivates
 	BattleScriptSpeedBoostActivates = 0,
@@ -77,9 +74,9 @@ GameSettings = {
 	-- BattleScript_SynchronizeActivates
 	BattleScriptSynchronizeActivates = 0,
 
-	-- gSaveblock1
+	-- gSaveblock1 (used below to calculate bag locations in memory)
 	gSaveBlock1 = 0,
-	-- gSaveBlock2Ptr
+	-- gSaveBlock2Ptr (used in retrieving bag items)
 	gSaveBlock2ptr = 0,
 	bagEncryptionKeyOffset = 0,
 	bagPocket_Items = 0,
