@@ -17,14 +17,35 @@ end
 
 function Utils.netEffectiveness(move, pkmnData)
 	local effectiveness = 1.0
-	if move["power"] == NOPOWER then
+
+	-- TODO: Do we want to handle Hidden Power's varied type in this? We could analyze the IV of the Pokémon and determine the type...
+
+	-- If move has no power, check for ineffectiveness by type first, then return 1.0 if ineffective cases not present
+	if move.power == NOPOWER then
+		if move.category ~= MoveCategories.STATUS then
+			if move.type == PokemonTypes.NORMAL and (pkmnData.type[1] == PokemonTypes.GHOST or pkmnData.type[2] == PokemonTypes.GHOST) then
+				return 0.0
+			elseif move.type == PokemonTypes.FIGHTING and (pkmnData.type[1] == PokemonTypes.GHOST or pkmnData.type[2] == PokemonTypes.GHOST) then
+				return 0.0
+			elseif move.type == PokemonTypes.PSYCHIC and (pkmnData.type[1] == PokemonTypes.DARK or pkmnData.type[2] == PokemonTypes.DARK) then
+				return 0.0
+			elseif move.type == PokemonTypes.GROUND and (pkmnData.type[1] == PokemonTypes.FLYING or pkmnData.type[2] == PokemonTypes.FLYING) then
+				return 0.0
+			elseif move.type == PokemonTypes.GHOST and (pkmnData.type[1] == PokemonTypes.NORMAL or pkmnData.type[2] == PokemonTypes.NORMAL) then
+				return 0.0
+			end
+		end
 		return 1.0
 	end
 
 	for _, type in ipairs(pkmnData["type"]) do
-		if move["type"] ~= "---" then
-			if EffectiveData[move["type"]][type] ~= nil then
-				effectiveness = effectiveness * EffectiveData[move["type"]][type]
+		local moveType = move["type"]
+		if move["name"] == "Hidden Power" and Tracker.Data.selectedPlayer == 1 then
+			moveType = Tracker.Data.currentHiddenPowerType
+		end
+		if moveType ~= "---" then
+			if EffectiveData[moveType][type] ~= nil then
+				effectiveness = effectiveness * EffectiveData[moveType][type]
 			end
 		end
 	end
@@ -33,7 +54,11 @@ end
 
 function Utils.isSTAB(move, pkmnData)
 	for _, type in ipairs(pkmnData["type"]) do
-		if move["type"] == type then
+		local moveType = move.type
+		if move.name == "Hidden Power" and Tracker.Data.selectedPlayer == 1 then
+			moveType = Tracker.Data.currentHiddenPowerType
+		end
+		if moveType == type then
 			return true
 		end
 	end
@@ -54,4 +79,15 @@ function Utils.calculateWeightBasedDamage(weight)
 	else
 		return "120"
 	end
+end
+
+function Utils.playerHasMove(moveName)
+	local pokemon = Tracker.Data.selectedPokemon 
+	local currentMoves = {pokemon["move1"],pokemon["move2"],pokemon["move3"],pokemon["move4"]}
+	for index, move in pairs(currentMoves) do
+		if MoveData[move+1].name == moveName then
+			return true
+		end
+	end
+	return false
 end

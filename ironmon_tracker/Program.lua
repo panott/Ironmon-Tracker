@@ -1,6 +1,12 @@
+State = {
+	TRACKER = "Tracker",
+	SETTINGS = "Settings",
+}
+
 Program = {
 	trainerPokemonTeam = {},
 	enemyPokemonTeam = {},
+	state = State.TRACKER,
 }
 
 Program.tracker = {
@@ -18,70 +24,82 @@ Program.StatButtonState = {
 	spe = 1
 }
 
+Program.transformedPokemon = {
+	isTransformed = false,
+	forceSwitch = false,
+}
+
 Program.eventCallbacks = {}
 
 function Program.main()
 	Input.update()
 
-	-- Update moves in the tracker
-	for _, move in ipairs(Program.tracker.movesToUpdate) do
-		Tracker.TrackMove(move.pokemonId, move.move, move.level)
-	end
-	Program.tracker.movesToUpdate = {}
-
-	-- Update abilities in the tracker
-	for _, ability in ipairs(Program.tracker.abilitiesToUpdate) do
-		Tracker.TrackAbility(ability.pokemonId, ability.abilityId)
-	end
-	Program.tracker.abilitiesToUpdate = {}
-
-	-- Update items in the tracker
-	for _, item in ipairs(Program.tracker.itemsToUpdate) do
-		Tracker.TrackItem(item.pokemonId, item.itemId)
-	end
-	Program.tracker.items = {}
-
-	-- Execute event callbacks
-	-- We do this during the next main loop instead of the callback itself because Bizhawk callback function context is JANK
-	-- For example, the working directory in the context becomes the directory of EmuHawk.exe instead of the directory of the main Lua script
-	for _, callback in ipairs(Program.eventCallbacks) do
-		callback()
-	end
-	Program.eventCallbacks = {}
-
-	-- Only redraw the UI when an event has occurred which requires the UI to be redrawn.
-	-- TODO: This could be more granular for even more performance gains. In general, drawing to the UI is very cheap but reading values from emulated memory is very expensive
-	if Tracker.redraw == true and Tracker.waitFrames == 0 then
-		if Tracker.Data.inBattle == 1 then
-			Program.UpdateMonPartySlots()
+	if Program.state == State.TRACKER then
+		-- Update moves in the tracker
+		for _, move in ipairs(Program.tracker.movesToUpdate) do
+			Tracker.TrackMove(move.pokemonId, move.move, move.level)
 		end
-		Program.UpdatePokemonTeamDataFromMemory()
-		Program.UpdateSelectedPokemonData()
-		Program.UpdateTargetedPokemonData()
-		Program.UpdatePrimaryMonAbilityData()
-		Program.UpdateMonStatStages()
-		Program.UpdateMonPartySlots()
-		Program.UpdateBagHealingItems()
+		Program.tracker.movesToUpdate = {}
 
-		Program.StatButtonState = Tracker.getButtonState()
-		Buttons = Program.updateButtons(Program.StatButtonState)
+		-- Update abilities in the tracker
+		for _, ability in ipairs(Program.tracker.abilitiesToUpdate) do
+			Tracker.TrackAbility(ability.pokemonId, ability.abilityId)
+		end
+		Program.tracker.abilitiesToUpdate = {}
 
-		if Tracker.Data.selectedPlayer == 2 then
-			Drawing.DrawTracker(Tracker.Data.selectedPokemon, true, Tracker.Data.targetedPokemon)
-		else
-			if Tracker.Data.needCheckSummary == 0 then
-				Drawing.DrawTracker(Tracker.Data.selectedPokemon, false, Tracker.Data.targetedPokemon)
-			else
-				Drawing.DrawTracker(Tracker.Data.selectedPokemon, true, Tracker.Data.targetedPokemon)
+		-- Update items in the tracker
+		for _, item in ipairs(Program.tracker.itemsToUpdate) do
+			Tracker.TrackItem(item.pokemonId, item.itemId)
+		end
+		Program.tracker.items = {}
+
+		-- Execute event callbacks
+		-- We do this during the next main loop instead of the callback itself because Bizhawk callback function context is JANK
+		-- For example, the working directory in the context becomes the directory of EmuHawk.exe instead of the directory of the main Lua script
+		for _, callback in ipairs(Program.eventCallbacks) do
+			callback()
+		end
+		Program.eventCallbacks = {}
+
+		-- Only redraw the UI when an event has occurred which requires the UI to be redrawn.
+		-- TODO: This could be more granular for even more performance gains. In general, drawing to the UI is very cheap but reading values from emulated memory is very expensive
+		if Tracker.redraw == true and Tracker.waitFrames == 0 then
+			if Tracker.Data.inBattle == 1 then
+				Program.UpdateMonPartySlots()
 			end
+			Program.UpdatePokemonTeamDataFromMemory()
+			Program.UpdateSelectedPokemonData()
+			Program.UpdateTargetedPokemonData()
+			Program.UpdatePrimaryMonAbilityData()
+			Program.UpdateMonStatStages()
+			Program.UpdateMonPartySlots()
+			Program.UpdateBagHealingItems()
+
+			Program.StatButtonState = Tracker.getButtonState()
+			Buttons = Program.updateButtons(Program.StatButtonState)
+
+			if Tracker.Data.selectedPlayer == 2 then
+				Drawing.DrawTracker(Tracker.Data.selectedPokemon, true, Tracker.Data.targetedPokemon)
+			else
+				if Tracker.Data.needCheckSummary == 0 then
+					Drawing.DrawTracker(Tracker.Data.selectedPokemon, false, Tracker.Data.targetedPokemon)
+				else
+					Drawing.DrawTracker(Tracker.Data.selectedPokemon, true, Tracker.Data.targetedPokemon)
+				end
+			end
+
+			Tracker.redraw = false
+			Tracker.saveData()
 		end
 
-		Tracker.redraw = false
-		Tracker.saveData()
-	end
-
-	if Tracker.waitFrames > 0 then
-		Tracker.waitFrames = Tracker.waitFrames - 1
+		if Tracker.waitFrames > 0 then
+			Tracker.waitFrames = Tracker.waitFrames - 1
+		end
+	elseif Program.state == State.SETTINGS then
+		if Options.redraw then
+			Drawing.drawSettings()
+			Options.redraw = false
+		end
 	end
 end
 
@@ -201,7 +219,7 @@ function Program.HandleTrainerSentOutPkmn()
 	Tracker.Data.inBattle = 1
 	Tracker.Data.selectedSlot = 1
 
-	if Settings.tracker.AUTO_TRACK == true then
+	if Settings.tracker.AUTO_SWAP_TO_ENEMY == true then
 		Tracker.Data.selectedPlayer = 2
 		Tracker.Data.targetPlayer = 1
 		Tracker.Data.targetSlot = 1
@@ -261,8 +279,13 @@ function Program.HandleDoPokeballSendOutAnimation()
 		Tracker.Data.targetPlayer = 2
 		Tracker.Data.targetSlot = 1
 	end
+	
+	if Program.transformedPokemon.isTransformed and not Program.transformedPokemon.forceSwitch then
+		-- Reset the transform tracking disable unless player was force-switched by roar/whirlwind
+		Program.transformedPokemon.isTransformed = false
+	end
 
-	if Settings.tracker.AUTO_TRACK == true then
+	if Settings.tracker.AUTO_SWAP_TO_ENEMY == true then
 		Tracker.Data.selectedPlayer = 2
 		Tracker.Data.targetPlayer = 1
 		Tracker.Data.targetSlot = 1
@@ -352,7 +375,7 @@ function Program.HandleMove()
 		if attackerValue == 1 then
 			pokemonId = Program.enemyPokemonTeam[enemySlotOne].pkmID
 			level = Program.enemyPokemonTeam[enemySlotOne].level
-			if Settings.tracker.AUTO_TRACK == true then
+			if Settings.tracker.AUTO_SWAP_TO_ENEMY == true then
 				Tracker.Data.selectedPlayer = 2
 				Tracker.Data.selectedSlot = enemySlotOne
 				Tracker.Data.targetPlayer = 1
@@ -361,14 +384,28 @@ function Program.HandleMove()
 		elseif attackerValue == 3 then
 			pokemonId = Program.enemyPokemonTeam[enemySlotTwo].pkmID
 			level = Program.enemyPokemonTeam[enemySlotTwo].level
-			if Settings.tracker.AUTO_TRACK == true then
+			if Settings.tracker.AUTO_SWAP_TO_ENEMY == true then
 				Tracker.Data.selectedPlayer = 2
 				Tracker.Data.selectedSlot = enemySlotTwo
 				Tracker.Data.targetPlayer = 1
 				Tracker.Data.targetSlot = selfSlotOne
 			end
 		end
-		table.insert(Program.tracker.movesToUpdate, { pokemonId = pokemonId + 1, move = moveValue, level = level })
+
+		-- Stop tracking moves temporarily while transformed
+		if not Program.transformedPokemon.isTransformed then
+			table.insert(Program.tracker.movesToUpdate, { pokemonId = pokemonId + 1, move = moveValue, level = level })
+		elseif moveValue == 19 or moveValue == 47 then
+			-- Account for niche scenario of force-switch moves being used while transformed
+			Program.transformedPokemon.forceSwitch = true
+		elseif Program.transformedPokemon.forceSwitch then
+			-- Reset when another move is used
+			Program.transformedPokemon.forceSwitch = false
+		end
+		-- This comes after so transform itself gets tracked
+		if moveValue == 145 then
+			Program.transformedPokemon.isTransformed = true
+		end
 	end
 
 	Tracker.redraw = true
@@ -660,3 +697,4 @@ function Program.getBagStatusItems()
 
 	return statusItems
 end
+
