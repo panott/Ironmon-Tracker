@@ -424,12 +424,17 @@ EffectiveData = {
 
 
 Credits = {
-	"IronMon Tracker v" .. TRACKER_VERSION,
-	"Created by: besteon",
+	"          IronMon Tracker v" .. TRACKER_VERSION,
+	"",
+	"Created by besteon",
 	"Collaborator: bdjeffyp",
 	"----------------------",
 	"Contributors:",
-	"OnlySpaghettiCode,",
-	"Fellshadow, AKD,",
-	"rcj001, and GB127",
+	"OnlySpaghettiCode, Fellshadow,",
+	"AKD, rcj001, and GB127",
+	"",
+	"",
+	"",
+	"",
+	"", -- bottom of the display, but just above the Close button
 }
