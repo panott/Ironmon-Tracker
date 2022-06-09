@@ -154,6 +154,11 @@ function Input.check(xmouse, ymouse)
 			Options.updated = true
 		end
 
+		-- Info button
+		if Input.isInRange(xmouse, ymouse, Options.infoButton.box[1], Options.infoButton.box[2], Options.infoButton.box[3], Options.infoButton.box[4]) then
+			Program.state = State.CREDITS
+		end
+
 		-- Settings close button
 		if Input.isInRange(xmouse, ymouse, Options.closeButton.box[1], Options.closeButton.box[2], Options.closeButton.box[3], Options.closeButton.box[4]) then
 			-- Save the Settings.ini file if any changes were made
@@ -163,6 +168,13 @@ function Input.check(xmouse, ymouse)
 			end
 			Tracker.redraw = true
 			Program.state = State.TRACKER
+		end
+
+	elseif Program.state == State.CREDITS then
+		-- Credits close button
+		if Input.isInRange(xmouse, ymouse, Options.closeButton.box[1], Options.closeButton.box[2], Options.closeButton.box[3], Options.closeButton.box[4]) then
+			Options.redraw = true
+			Program.state = State.SETTINGS
 		end
 	end
 end
