@@ -421,3 +421,15 @@ EffectiveData = {
 	dark = { fighting = 0.5, psychic = 2, ghost = 2, dark = 0.5, steel = 0.5 },
 	steel = { fire = 0.5, water = 0.5, ice = 2, rock = 2, steel = 0.5, electric = 0.5 },
 }
+
+
+Credits = {
+	"IronMon Tracker v" .. TRACKER_VERSION,
+	"Created by: besteon",
+	"Collaborator: bdjeffyp",
+	"----------------------",
+	"Contributors:",
+	"OnlySpaghettiCode,",
+	"Fellshadow, AKD,",
+	"rcj001, and GB127",
+}
