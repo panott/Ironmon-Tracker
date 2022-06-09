@@ -1,6 +1,8 @@
 State = {
 	TRACKER = "Tracker",
 	SETTINGS = "Settings",
+	CREDITS = "Credits",
+	BUTTONS = "Buttons",
 }
 
 Program = {
@@ -98,6 +100,13 @@ function Program.main()
 	elseif Program.state == State.SETTINGS then
 		if Options.redraw then
 			Drawing.drawSettings()
+			Options.redraw = false
+		end
+	elseif Program.state == State.CREDITS then
+		Drawing.drawCredits()
+	elseif Program.state == State.BUTTONS then
+		if Options.redraw then
+			Drawing.drawButtonSettings()
 			Options.redraw = false
 		end
 	end
