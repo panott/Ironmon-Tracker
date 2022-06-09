@@ -532,7 +532,7 @@ function Drawing.DrawTracker(monToDraw, monIsEnemy, targetMon)
 			elseif movePower == ">HP" and not monIsEnemy then
 				-- Calculate the power of water spout & eruption moves for the player only
 				newPower = Utils.calculateHighHPBasedDamage(currentHP, maxHP)
-			else 
+			else
 				newPower = movePower
 			end
 			Drawing.drawText(GraphicConstants.SCREEN_WIDTH + powerOffset, moveStartY + (distanceBetweenMoves * (moveIndex - 1)), newPower, stabColors[moveIndex])
@@ -613,6 +613,9 @@ function Drawing.drawSettings()
 	gui.drawRectangle(Options.closeButton.box[1], Options.closeButton.box[2], Options.closeButton.box[3], Options.closeButton.box[4], Options.closeButton.backgroundColor[1], Options.closeButton.backgroundColor[2])
 	Drawing.drawText(Options.closeButton.box[1] + 3, Options.closeButton.box[2], Options.closeButton.text, Options.closeButton.textColor)
 
+	-- Info button
+	gui.drawImage(Options.infoButton.file, Options.infoButton.box[1], Options.infoButton.box[2])
+
 	-- Roms folder setting
 	local folder = Drawing.truncateRomsFolder(Settings.config.ROMS_FOLDER)
 	Drawing.drawText(Options.romsFolderOption.box[1], Options.romsFolderOption.box[2], Options.romsFolderOption.text .. folder, Options.romsFolderOption.textColor)
@@ -629,5 +632,25 @@ function Drawing.drawSettings()
 			gui.drawLine(button.box[1], button.box[2], button.box[1] + button.box[3], button.box[2] + button.box[4], button.optionColor)
 			gui.drawLine(button.box[1], button.box[2] + button.box[4], button.box[1] + button.box[3], button.box[2], button.optionColor)
 		end
+	end
+end
+
+function Drawing.drawCredits()
+	local borderMargin = 5
+	local rightEdge = GraphicConstants.RIGHT_GAP - (2 * borderMargin)
+	local bottomEdge = GraphicConstants.SCREEN_HEIGHT - (2 * borderMargin)
+
+	-- Credits view box
+	gui.drawRectangle(GraphicConstants.SCREEN_WIDTH + borderMargin, borderMargin, rightEdge, bottomEdge, GraphicConstants.LAYOUTCOLORS.BOXBORDER, GraphicConstants.LAYOUTCOLORS.BOXFILL)
+
+	-- Cancel/close button
+	gui.drawRectangle(Options.closeButton.box[1], Options.closeButton.box[2], Options.closeButton.box[3], Options.closeButton.box[4], Options.closeButton.backgroundColor[1], Options.closeButton.backgroundColor[2])
+	Drawing.drawText(Options.closeButton.box[1] + 3, Options.closeButton.box[2], Options.closeButton.text, Options.closeButton.textColor)
+
+	-- Render the credits! Pat yourself on the back!
+	local lineOffset = 1
+	for _, text in pairs(Credits) do
+		Drawing.drawText(GraphicConstants.SCREEN_WIDTH + borderMargin + 1, lineOffset * 10, text, GraphicConstants.LAYOUTCOLORS.NEUTRAL)
+		lineOffset = lineOffset + 1
 	end
 end
