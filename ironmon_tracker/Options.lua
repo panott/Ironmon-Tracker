@@ -20,6 +20,21 @@ Options.closeButton = {
 	-- onClick = function(): currently handled in the Input object
 }
 
+-- This button brings up the credits screen
+Options.infoButton = {
+	file = DATA_FOLDER .. "/images/icons/info.png",
+	box = {
+		GraphicConstants.SCREEN_WIDTH + 10, -- 6 = borderMargin + 5
+		GraphicConstants.SCREEN_HEIGHT - 17, -- 13 = borderMargin + 13
+		8,
+		8,
+	},
+	onClick = function()
+		Program.state = State.CREDITS
+		Options.redraw = true
+	end
+}
+
 -- Not a visible button, but is used by the Input script to see if clicks occurred on the setting
 Options.romsFolderOption = {
 	text = "Roms folder: ",
